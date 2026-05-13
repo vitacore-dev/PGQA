@@ -1,0 +1,36 @@
+{
+  "include": [
+    "pg_query_analyzer/analysis",
+    "pg_query_analyzer/db",
+    "pg_query_analyzer/storage",
+    "pg_query_analyzer/observed_plans",
+    "pg_query_analyzer/visualization",
+    "tests",
+    "PSQLQA.py"
+  ],
+  "exclude": [".venv", "**/__pycache__", ".pytest_cache", "pg_query_analyzer/ui"],
+  "pythonVersion": "3.11",
+  "typeCheckingMode": "off",
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "extraPaths": ["."],
+      "pythonVersion": "3.11"
+    }
+  ],
+  "reportMissingImports": true,
+  "reportMissingModuleSource": "none",
+  "reportMissingTypeArgument": "none",
+  "reportUnknownMemberType": "none",
+  "reportUnknownVariableType": "none",
+  "reportUnknownArgumentType": "none",
+  "reportUnknownParameterType": "none",
+  "reportMissingParameterType": "none",
+  "reportUnannotatedClassAttribute": "none",
+  "reportUninitializedInstanceVariable": "none",
+  "reportUnusedCallResult": "none",
+  "reportPrivateUsage": "none",
+  "reportUnusedImport": "none",
+  "reportUnusedExpression": "none",
+  "reportGeneralTypeIssues": "none"
+}

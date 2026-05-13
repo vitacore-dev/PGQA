@@ -1,0 +1,17 @@
+<explain xmlns="http://www.postgresql.org/2009/explain">
+  <Query>
+    <Plan>
+      <Node-Type>Nested Loop</Node-Type>
+      <Total-Cost>42.5</Total-Cost>
+      <Plan-Rows>3</Plan-Rows>
+      <Plans>
+        <Plan>
+          <Node-Type>Seq Scan</Node-Type>
+          <Relation-Name>users</Relation-Name>
+          <Total-Cost>12.0</Total-Cost>
+          <Plan-Rows>10</Plan-Rows>
+        </Plan>
+      </Plans>
+    </Plan>
+  </Query>
+</explain>

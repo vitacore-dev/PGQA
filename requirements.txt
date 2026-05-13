@@ -1,0 +1,9 @@
+PyQt5
+PyQtWebEngine
+certifi
+psycopg2-binary
+sshtunnel
+paramiko<4
+qtawesome
+keyring
+pglast>=7,<8

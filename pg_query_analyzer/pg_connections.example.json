@@ -1,0 +1,15 @@
+{
+    "my_local": {
+        "host": "127.0.0.1",
+        "port": "5432",
+        "dbname": "postgres",
+        "user": "postgres",
+        "ssh": {
+            "enabled": false,
+            "host": "",
+            "port": "22",
+            "user": "",
+            "private_key_path": ""
+        }
+    }
+}

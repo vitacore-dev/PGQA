@@ -1,0 +1,17 @@
+[
+  {
+    "Plan": {
+      "Node Type": "Nested Loop",
+      "Total Cost": 42.5,
+      "Plan Rows": 3,
+      "Plans": [
+        {
+          "Node Type": "Seq Scan",
+          "Relation Name": "users",
+          "Total Cost": 12.0,
+          "Plan Rows": 10
+        }
+      ]
+    }
+  }
+]

@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+
+# Tools / tests
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+*.cover
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Локальные данные приложения (не коммитить)
+pg_query_analyzer/pg_connections.json
+pg_query_analyzer/ui/analyzer_settings.json
+pg_query_analyzer/ai_feedback.json
+query_plans_journal.json
+*.sqlite
+application.log
+db_report_*.md
