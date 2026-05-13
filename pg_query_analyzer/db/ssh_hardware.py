@@ -80,6 +80,11 @@ def _connect_client(connection: dict) -> paramiko.SSHClient:
     return client
 
 
+def connect_ssh_client(connection: dict) -> paramiko.SSHClient:
+    """Открыть SSH-сессию по тем же правилам, что туннель и сбор профиля железа."""
+    return _connect_client(connection)
+
+
 def _exec(client: paramiko.SSHClient, command: str) -> tuple[int, str, str]:
     stdin, stdout, stderr = client.exec_command(command, timeout=_CMD_TIMEOUT)
     _ = stdin

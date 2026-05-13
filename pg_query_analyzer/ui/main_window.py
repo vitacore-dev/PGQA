@@ -369,6 +369,7 @@ class QueryPlanVisualizer(QMainWindow):
     GENERAL_ANALYSIS_TAB_LABEL = "📕 Проблемы"
     RECOMMENDATIONS_TAB_LABEL = "📗 Что попробовать"
     POSTGRES_SETTINGS_TAB_LABEL = "⚙️ Настройки PostgreSQL"
+    BACKUP_TAB_LABEL = "💾 Резервное копирование"
 
     def __init__(self):
         super().__init__()
@@ -1526,6 +1527,13 @@ class QueryPlanVisualizer(QMainWindow):
                         th.wait(1500)
                     except Exception:
                         logging.debug("Не удалось дождаться потока %s", th_name, exc_info=True)
+
+            br = getattr(self, "backup_restore_widget", None)
+            if br is not None:
+                try:
+                    br.shutdown(interactive=False)
+                except Exception:
+                    logging.debug("Не удалось остановить backup/restore", exc_info=True)
         finally:
             super().closeEvent(event)
 
@@ -2844,16 +2852,19 @@ class QueryPlanVisualizer(QMainWindow):
             <ul>
                 <li><strong>Левая панель (вкладки):</strong>
                     <ul>
-                        <li>Визуализация плана запроса - интерактивный граф выполнения запроса</li>
-                        <li>Сканер запросов - мониторинг активных запросов в базе данных</li>
-                        <li>Обслуживание БД - инструменты для работы с индексами, статистикой и VACUUM</li>
+                        <li>План — визуализация плана запроса</li>
+                        <li>Активные запросы — мониторинг <code>pg_stat_activity</code></li>
+                        <li>Workload — <code>pg_stat_statements</code></li>
+                        <li>Обслуживание БД — индексы, статистика, VACUUM, HypoPG</li>
+                        <li>История — журнал планов и наблюдаемые планы</li>
+                        <li>Настройки PostgreSQL — параметры сервера и рекомендации</li>
+                        <li>Резервное копирование — <code>pg_dump</code> / <code>pg_restore</code> (клиент на этой машине)</li>
                     </ul>
                 </li>
                 <li><strong>Правая панель (вкладки):</strong>
                     <ul>
-                        <li>Общий анализ - подробный разбор плана запроса с метриками и проблемами</li>
-                        <li>Рекомендации - конкретные шаги по оптимизации запроса</li>
-                        <li>Настройки PostgreSQL - параметры сервера и рекомендации по их настройке</li>
+                        <li>Общий анализ — подробный разбор плана с метриками и проблемами</li>
+                        <li>Рекомендации — конкретные шаги по оптимизации запроса</li>
                     </ul>
                 </li>
                 <li><strong>Нижняя панель:</strong> выбор подключения, ввод SQL запроса, кнопки выполнения</li>
@@ -4041,6 +4052,11 @@ class QueryPlanVisualizer(QMainWindow):
             # PostgreSQL settings as a dedicated left tab (after History).
             self.postgres_settings_tab = self.create_postgres_settings_tab()
             self.left_tabs.addTab(self.postgres_settings_tab, self.POSTGRES_SETTINGS_TAB_LABEL)
+
+            from pg_query_analyzer.ui.backup_restore_dialog import BackupRestoreWidget
+
+            self.backup_restore_widget = BackupRestoreWidget(self)
+            self.left_tabs.addTab(self.backup_restore_widget, self.BACKUP_TAB_LABEL)
 
             self.right_tabs = QTabWidget()
             self.right_tabs.currentChanged.connect(self.on_right_tab_changed)
