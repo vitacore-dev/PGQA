@@ -91,6 +91,7 @@ from pg_query_analyzer.ui.connections_dialog import ConnectionDialog
 from pg_query_analyzer.ui.sql_editor_dialog import SQLEditorDialog
 from pg_query_analyzer.ui.rich_text_widgets import ClickableTextBrowser
 from pg_query_analyzer.ui.query_analyzer_tab import QueryAnalyzerTab
+from pg_query_analyzer.ui.log_statement_tab import LogStatementTab
 from pg_query_analyzer.ui.stat_statements_tab import StatStatementsTab
 from pg_query_analyzer.ui.hypopg_tab import HypoPGTab
 from pg_query_analyzer.ui.analyzer_settings_dialog import AnalyzerSettingsDialog
@@ -364,6 +365,7 @@ class QueryPlanVisualizer(QMainWindow):
     PLAN_TAB_LABEL = "💹 План"
     ACTIVE_QUERIES_TAB_LABEL = "💻 Активные запросы"
     WORKLOAD_TAB_LABEL = "📊 Workload"
+    LOG_STATEMENT_TAB_LABEL = "📜 log_statement"
     ADMIN_TAB_LABEL = "🛠 Обслуживание БД"
     HISTORY_TAB_LABEL = "🗂 История"
     GENERAL_ANALYSIS_TAB_LABEL = "📕 Проблемы"
@@ -4043,6 +4045,9 @@ class QueryPlanVisualizer(QMainWindow):
             self.stat_statements_tab = StatStatementsTab(self)
             self.left_tabs.addTab(self.stat_statements_tab, self.WORKLOAD_TAB_LABEL)
 
+            self.log_statement_tab = LogStatementTab(self)
+            self.left_tabs.addTab(self.log_statement_tab, self.LOG_STATEMENT_TAB_LABEL)
+
             self.db_optimization_panel = self.create_db_optimization_panel()
             self.left_tabs.addTab(self.db_optimization_panel, self.ADMIN_TAB_LABEL)
 
@@ -4186,6 +4191,9 @@ class QueryPlanVisualizer(QMainWindow):
             elif tab_text == self.WORKLOAD_TAB_LABEL:
                 self.clear_analysis_panels(keep_settings=True)
                 self.show_stat_statements_info()
+            elif tab_text == self.LOG_STATEMENT_TAB_LABEL:
+                self.clear_analysis_panels(keep_settings=True)
+                self.show_log_statement_info()
             elif tab_text == self.ADMIN_TAB_LABEL:
                 self.clear_analysis_panels(keep_settings=True)
                 self.show_db_optimization_info()
@@ -4358,6 +4366,49 @@ class QueryPlanVisualizer(QMainWindow):
                     <li>Сортировка по mean_ms выявляет дорогие типичные выполнения</li>
                     <li>Сравните с активными запросами, чтобы связать историю и текущую нагрузку</li>
                 </ul>
+            </body>
+            </html>
+            """)
+
+    def show_log_statement_info(self):
+        if hasattr(self, "general_analysis_text"):
+            self.general_analysis_text.setHtml("""
+            <html>
+            <body style="color:#e0e0e0;font-family:Segoe UI,Arial,sans-serif;">
+                <h2 style="color:#4fc3f7;">📜 log_statement</h2>
+                <p>Импорт текстов из серверного лога PostgreSQL, где записаны выполненные выражения
+                (<code>log_statement</code> ≠ off). Работает офлайн: подключение к кластеру не нужно.</p>
+
+                <h3 style="color:#81c784;">Форматы</h3>
+                <ul>
+                    <li><b>stderr / обычный .log</b> — строки вида <code>LOG:  statement: SELECT …</code>;
+                    продолжения многострочного SQL с отступом табуляции (как пишет сервер)</li>
+                    <li><b>csvlog</b> — файл с заголовком, содержащим <code>log_time</code> и <code>message</code>;
+                    при наличии непустой колонки <code>query</code> она предпочитается</li>
+                </ul>
+
+                <h3 style="color:#81c784;">Анализ</h3>
+                <ul>
+                    <li>Группировка по тому же fingerprint, что и в журнале / Workload (<code>normalize_query_text</code>)</li>
+                    <li>Столбец «таблицы» — эвристика через pglast по примеру текста</li>
+                    <li>Кнопка «В поле запроса» переключает на «План» и подставляет SQL для <code>EXPLAIN</code></li>
+                    <li><b>SSH:</b> загрузка файла лога с хоста профиля (тот же SSH, что туннель / бэкап): белый список префиксов путей,
+                    SFTP для небольших файлов и <code>tail -c</code> на сервере, если файл больше лимита МБ</li>
+                    <li>Кнопка «Каталог лога из БД» подставляет абсолютный <code>log_directory</code> (нужно активное подключение к PostgreSQL)</li>
+                </ul>
+
+                <p style="color:#fcc419;">На проде включение <code>log_statement = all</code> даёт большой объём лога и риск утечки данных;
+                чаще используют <code>mod</code>/<code>ddl</code> или выборочное логирование.</p>
+            </body>
+            </html>
+            """)
+        if hasattr(self, "optimization_text"):
+            self.optimization_text.setHtml("""
+            <html>
+            <body style="color:#e0e0e0;font-family:Segoe UI,Arial,sans-serif;">
+                <h2 style="color:#4fc3f7;">Связка с Workload</h2>
+                <p>Сравните частоту в логе с <code>pg_stat_statements</code>: одно и то же узкое место
+                должно проявляться и там, и там, если период и база сопоставимы.</p>
             </body>
             </html>
             """)
